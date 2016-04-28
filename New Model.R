@@ -10,11 +10,33 @@ library(phytools)
 # a binary character for the species in the tree that all other traits will be tested against (y)
 # for this example that would be wild v. domesticated
 
-setwd("~/GitHub/New-Method")
-Trial.data<-read.csv("Trial_data.csv")
+# Old not working dummy data
+#setwd("~/GitHub/New-Method")
+#Trial.data<-read.csv("Trial_data.csv")
+#Trial.data.x<-read.csv("Trial_data_x.csv")
+#Trial.data.y<-read.csv("Trial_data_y.csv")
+#tree<-"need a tree"
+#x<-Trial.data.x
+#y<-Trial.data.y
 
-# Build a tree first then output tree file with other results
-# Give option to have function build a tree or use a given tree
+
+# Dummy data taken from Liam Revell
+tree<-pbtree(n=300,scale=1)
+Q<-matrix(c(-1,1,1,-1),2,2)
+rownames(Q)<-colnames(Q)<-letters[1:2]
+tt1<-sim.history(tree,Q)
+tt2<-sim.history(tree,Q)
+
+x<-tt1$states
+y<-tt2$states
+
+single_pagel<-fitPagel(tree,x,y)
+
+par(mfrow=c(1,2))
+plotSimmap(tt1,setNames(c("blue","red"),letters[1:2]),ftype="off",lwd=1)
+plotSimmap(tt2,setNames(c("blue","red"),letters[1:2]),ftype="off",lwd=1,direction="leftwards")
+
+
 
 # have a check function to check and make sure function has everything it needs to run
 
@@ -25,6 +47,19 @@ Trial.data<-read.csv("Trial_data.csv")
 
 # loop fitPagel(tree, x<-1, y)
 # fitPagel (tree, [x<-1+previous line, up to total number of traits, then stop], y)
+# or should I take th matrix for x and then break it apart into smaller matrices with only one trait each
+
+
+
+c<-ncol(x)
+multi_pagel<-0
+for(i in 2:c)
+{
+  multi_pagel[i]<-fitPagel(tree, x[i], y) 
+  print(multi_pagel[i])
+}
+print(i)
+
 
 # Output
 
