@@ -11,7 +11,7 @@ tt1<-sim.history(tree,Q)
 tt2<-sim.history(tree,Q)
 
 x1<-tt1$states
-y<-tt2$states
+y1<-tt2$states
 
 single_pagel<-fitPagel(tree,x1,y)
 single_pagel
@@ -21,13 +21,15 @@ single_pagel$P
 
 tt3<-sim.history(tree,Q)
 x2<-tt3$states
+tt4<-sim.history(tree,Q)
+y2<-tt4$states
 
 
-Pagel1<-fitPagel(tree,x1,y)
-Pagel2<-fitPagel(tree,x2,y)
+
 
 # This part works
 # not a loop though and only works for 3 traits as individual vectors
+
 multi_pagel<-
   {
   Pagel1<-fitPagel(tree,x1,y)
@@ -39,27 +41,63 @@ multi_pagel<-
 }
 
 
+
+
 # Lets try to make a loop for having all of the traits (x) in one matrix
+# First lets put eveything into one matrix for x and one matrix for y
 
 x<-cbind(x1,x2)
 trait_num<-(ncol(x))
 species_num<-(nrow(x))
+y<-cbind(y1,y2)
+y_num<-(ncol(y))
+trait_names<-colnames (x)
+y_names<-colnames (y)
+
+
+# This code works for multiple x against a single y
+# This code has a print p-value only output (output of p-value does not work)
 
 multi_pagel<-0
-results<-list()
 for (i in 1:trait_num)
 {
-  multi_pagel[i]<-fitPagel(tree,x[,i],y)
-  results[[i]]<-matrix(multi_pagel[i],species_num,trait_num)
+  multi_pagel[i]<-fitPagel(tree,x[,i],y1)
+  print(paste(multi_pagel[i]$P))
 }
-results2<-do.call(rbind,results)
 
-#result_list <- list()
-#for(i in 1:5){
-#  n <- sample(1:5, 1)
-#  result_list[[i]] <- matrix(0, n, 3)
-#}
-#result_final <- do.call(rbind, result_list)
+
+
+# This code works for multiple x against multiple y
+# code runs
+# Not sure on output
+
+multi_pagel<-0
+for (i in 1:trait_num){
+  for (j in 1:y_num){
+    multi_pagel[i]<-fitPagel(tree,x[,i],y[,j])
+    print(paste(multi_pagel[i]))    
+  }
+}
+
+
+
+# p.adjust the p value do bon foroni correction on P-values
+# This is crucial
+
+
+
+
+
+
+# Output results into a data.frame
+# first column with species name
+# second column with x trait p-values v first y trait
+# third column with next x trait p-values
+
+
+
+
+
 
 
 
@@ -99,6 +137,15 @@ results2<-do.call(rbind,results)
 #  print(multi_pagel[i])
 #}
 #print(i)
+
+# Brian's code for how to run multiple for loops
+# This code runs i against each possible p
+# I want to run multiple x against multiple y
+#for (i in sequence(3)) {
+#  for (j in sequence(4)) {
+#    print(paste("i", i, "j", j))
+#  }
+#}
 
 #fitPagel(tree, x, y, ...)
 # tree - an object of class "phylo"
