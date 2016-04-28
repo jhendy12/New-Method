@@ -22,16 +22,12 @@ single_pagel$P
 tt3<-sim.history(tree,Q)
 x2<-tt3$states
 
-# Should I take the matrix for x and then break it apart into smaller matrices with only one trait each
-# Or should I require each trait to be in a different vector 
-# Input for function (give it number of traits, tree, multiple x for each trait, y)
-
 
 Pagel1<-fitPagel(tree,x1,y)
 Pagel2<-fitPagel(tree,x2,y)
 
 # This part works
-# not a loop though and only works for 3 traits
+# not a loop though and only works for 3 traits as individual vectors
 multi_pagel<-
   {
   Pagel1<-fitPagel(tree,x1,y)
@@ -43,17 +39,27 @@ multi_pagel<-
 }
 
 
+# Lets try to make a loop for having all of the traits (x) in one matrix
 
+x<-cbind(x1,x2)
+trait_num<-(ncol(x))
+species_num<-(nrow(x))
 
-Pagel<-0
-for (i in 1:2)
+multi_pagel<-0
+results<-list()
+for (i in 1:trait_num)
 {
-  Pagel[i]<-fitPagel(tree,x,y)
-  print (Pagel[i])
+  multi_pagel[i]<-fitPagel(tree,x[,i],y)
+  results[[i]]<-matrix(multi_pagel[i],species_num,trait_num)
 }
+results2<-do.call(rbind,results)
 
-
-
+#result_list <- list()
+#for(i in 1:5){
+#  n <- sample(1:5, 1)
+#  result_list[[i]] <- matrix(0, n, 3)
+#}
+#result_final <- do.call(rbind, result_list)
 
 
 
