@@ -38,40 +38,27 @@ trait_names<-colnames (x)
 y_names<-colnames (y)
 
 
-# This code works for multiple x against a single y
-# This code has a print p-value only output (output of p-value does not work)
-
-multi_pagel<-list()
-for (i in 1:trait_num)
-{
-  multi_pagel[[i]]<-fitPagel(tree,x[,i],y1)
-  print(paste(multi_pagel[[i]]$P))
-}
 
 
-
-# This code works for multiple x against multiple y
+# This code works for multiple x against multiple y (exactly what I want it to do)
 # code runs
 # ouput works
 
 MultiPagel <- function(tree, trait_num, y_num, x, y) {
 multi_pagel<-list() 
 d<-data.frame()
-e<-data.frame()
 for (i in 1:trait_num){
   for (j in 1:y_num){
     multi_pagel[[i]]<-fitPagel(tree,x[,i],y[,j])
-    d<-rbind(d, data.frame(x=i, y=j, p=multi_pagel[[i]]$P, bonferroni=p.adjust(multi_pagel[[i]]$P,"bonferroni")))
+    d<-rbind(d, data.frame(x=i, y=j, p=multi_pagel[[i]]$P, bonferroni=p.adjust(multi_pagel[[i]]$P,"bonferroni"),matrix.x=multi_pagel[[i]]$independent.Q, matrix.y=multi_pagel[[i]]$dependent.Q))
     print(d)
-    e<-rbind(e, data.frame(x=i, y=j, matrixx=multi_pagel[[i]]$independent.Q, matrixy=multi_pagel[[i]]$dependent.Q))
-    print(e)        
+      
       }
 }
-return (d, e)
+return (d)
 
 }
 
 
 U1<-MultiPagel(tree, trait_num, y_num, x, y)
-
 
