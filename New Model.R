@@ -16,21 +16,9 @@ y1<-tt2$states
 single_pagel<-fitPagel(tree,x1,y1)
 single_pagel
 single_pagel$P
+single_pagel$independent.Q
+single_pagel$dependent.Q
 
-
-
-# This part works
-# not a loop though and only works for 3 traits as individual vectors
-
-multi_pagel<-
-  {
-  Pagel1<-fitPagel(tree,x1,y1)
-  print(paste("Trait 1 P-Value:", Pagel1$P))
-  Pagel2<-fitPagel(tree,x2,y1)
-  print(paste("Trait 2 P-Value:", Pagel2$P))
-  Pagel3<-fitPagel(tree,x3,y1)
-  print(paste("Trait 3 P-value:", Pagel3$P))
-}
 
 
 # Lets try making more simulated data for x and y
@@ -63,38 +51,27 @@ for (i in 1:trait_num)
 
 
 # This code works for multiple x against multiple y
-# code runs (not anymore)
-# Not sure on output
-MultiPagel <- function(tree, trait_num, y_num, x) {
+# code runs
+# ouput works
+
+MultiPagel <- function(tree, trait_num, y_num, x, y) {
 multi_pagel<-list() 
 d<-data.frame()
+e<-data.frame()
 for (i in 1:trait_num){
   for (j in 1:y_num){
     multi_pagel[[i]]<-fitPagel(tree,x[,i],y[,j])
-    d<-rbind(d, data.frame(x=i, y=j, p=multi_pagel[[i]]$P))
+    d<-rbind(d, data.frame(x=i, y=j, p=multi_pagel[[i]]$P, bonferroni=p.adjust(multi_pagel[[i]]$P,"bonferroni")))
     print(d)
-  }
+    e<-rbind(e, data.frame(x=i, y=j, matrixx=multi_pagel[[i]]$independent.Q, matrixy=multi_pagel[[i]]$dependent.Q))
+    print(e)        
+      }
 }
-return (d)
-}
+return (d, e)
 
-
-#Brian's code for secret functions
-a <- function(x) {
-  secret <- x^2
-  return(secret)
 }
 
 
+U1<-MultiPagel(tree, trait_num, y_num, x, y)
 
-
-
-# Output results into a data.frame
-# first column with species name
-# second column with x trait p-values v first y trait
-# third column with next x trait p-values
-
-
-
-# p.adjust the p value do bon foroni correction on P-values
 
